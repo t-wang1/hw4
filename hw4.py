@@ -341,6 +341,29 @@ def process_user_input(self):
     elif input == "Q":
         return False
     
+def init_all_airports():
+    for airport_data in airport_data:
+        airport_code = airport_data['airport_code']
+        latitude_degrees = airport_data['latitude_degrees']
+        latitude_minutes = airport_data['latitude_minutes']
+        longitude_degrees = airport_data['longitude_degrees']
+        longitude_minutes = airport_data['longitude_minutes']
+        airport = airport(airport_code, latitude_degrees, latitude_minutes, longitude_degrees, longitude_minutes)
+        graph.add_node(airport_code, airport)
+
+def init_edge(node1, node2):
+    a1 = graph.get_node_data(node1)
+    a2 = graph.get_node_data(node2)
+    distance = airport.calculate_distance(a1, a2)
+    graph.add_edge(a1, a2, distance)
+    graph.add_edge(a2, a1, distance)
+
+def init_all_edges():
+    for edge_data in edge_data:
+        edge1 = edge_data['edge1']
+        edge2 = edge_data['edge2']
+        init_edge(edge1, edge2)
+    
 
 
 
