@@ -282,6 +282,37 @@ def display_current_trip():
     trip_distance = 0.0
     leg_distance = 0.0
     for i in range(len(stops)):
+        if leg_num < len(stops):
+            str += f"\t{i + 1}. "
+            last_stop = stops[leg_num-1]
+            next_stop = stops[leg_num]
+            route = []
+            graph.find_path(route, last_stop, next_stop)
+            if len(route) < 2:
+                print("No route found from" + last_stop + " to " + next_stop)
+            else:
+                for j in range(len(route)-1):
+                    a1 = graph.get_node_data(route[j])
+                    a2 = graph.get_node_data(route[j+1])
+                    distance = airport.calculate_distance(a1, a2)
+                    leg_distance += distance
+                    if j == 0:
+                        print(a1.get_code())
+                        print("-" + a2.get_code())
+                print("Leg Distance: " + leg_distance + "miles")
+            leg_num += 1
+            trip_distance += leg_distance
+    str += "Total Trip Distance: " + trip_distance + "miles"
+
+def displayMenu():
+    print("Enter a selection: ")
+    print("S) Add a Stop to your Trip")
+    print("U) Undo")
+    print("R) Redo")
+    print("E) Empty Trip")
+    print("Q) Quit")
+    print("-")
+
 
 
 
