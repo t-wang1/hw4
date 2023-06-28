@@ -283,8 +283,8 @@ def display_current_trip():
     print("Current Trip Stops: ")
     for i in range(len(stops)):
         print(f"\t{i + 1}. {stops[i]}")
-    
-    print("Current Trip Length: ")
+
+    print(f"Current Trip Length: ")
     leg_num = 1
     trip_distance = 0.0
     output = ""
@@ -296,7 +296,7 @@ def display_current_trip():
             route = []
             graph.find_path(route, last_stop, next_stop)
             if len(route) < 2:
-                print("No route found from" + last_stop + " to " + next_stop)
+                print("No route found from " + last_stop + " to " + next_stop)
             else:
                 leg_distance = 0.0
                 for j in range(len(route)-1):
@@ -322,9 +322,9 @@ def display_menu():
     print("-")
 
 def process_user_input():
-    user_input = input("Enter your selection: ")
-    if user_input == "S":
-        print("Enter the airport code: ")
+    scanner = input("Enter your selection: ")
+    if scanner == "S":
+        user_input = input("Enter the airport code: ")
         if graph.node_exists(user_input):
             neighbors = []
             graph.get_neighbors(neighbors, user_input)
@@ -336,19 +336,24 @@ def process_user_input():
                     t = trip_planner(stops, user_input)
                     tps.add_transaction(t)
                     stops.append(user_input)
+                    display_current_trip()
             else:
                 t = trip_planner(stops, user_input)
                 tps.add_transaction(t)
                 stops.append(user_input)
+                display_current_trip()
         else:
             print("invalid airport code error - no stop added") 
-    elif user_input == "U":
+    elif scanner == "U":
         tps.undo_transaction()
-    elif user_input == "R":
+        display_current_trip()
+    elif scanner == "R":
         tps.do_transaction()
-    elif user_input == "E":
+        display_current_trip()
+    elif scanner == "E":
         tps.clear_all_transactions()
-    elif user_input == "Q":
+        display_current_trip()
+    elif scanner == "Q":
         return False
     return True
 
@@ -393,6 +398,7 @@ def main():
         display_current_trip()
         display_menu()
         check = process_user_input()
+        display_current_trip()
 
 main()
 
