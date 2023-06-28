@@ -1,6 +1,12 @@
 import math
 import json 
 
+with open('/Users/tiffanywang/Documents/CSE 216/hw4/airport_data.json') as f:
+    data = json.load(f)
+
+with open('/Users/tiffanywang/Documents/CSE 216/hw4/edge_data.json') as f:
+    edge_data = json.load(f) 
+
 class p_tps:
     transactions = []
     num_transactions = 0
@@ -255,7 +261,7 @@ class trip_planner:
 
 stops = []
 graph = weighted_graph()
-tps = p_tps()
+tps = p_tps([], 0, -1, False, False)
 p_tps_description = str(tps)
 print(p_tps_description)
 
@@ -341,22 +347,16 @@ def process_user_input(self):
         tps.clear_all_transactions
     elif input == "Q":
         return False
-    
-with open('airport_data.json') as f:
-    airport_data = json.load(f)
 
 def init_all_airports():
-    for airport_data in airport_data:
-        airport_code = airport_data['airport_code']
-        latitude_degrees = airport_data['latitude_degrees']
-        latitude_minutes = airport_data['latitude_minutes']
-        longitude_degrees = airport_data['longitude_degrees']
-        longitude_minutes = airport_data['longitude_minutes']
-        airport = airport(airport_code, latitude_degrees, latitude_minutes, longitude_degrees, longitude_minutes)
-        graph.add_node(airport_code, airport)
-
-with open('edge_data.json') as f:
-    edge_data = json.load(f) 
+    for airport_data in data:
+        airport_code = airport_data['airport code']
+        latitude_degrees = airport_data['latitude degrees']
+        latitude_minutes = airport_data['latitude minutes']
+        longitude_degrees = airport_data['longitude degrees']
+        longitude_minutes = airport_data['longitude minutes']
+        new_airport = airport(airport_code, latitude_degrees, latitude_minutes, longitude_degrees, longitude_minutes)
+        graph.add_node(airport_code, new_airport)
 
 def init_edge(node1, node2):
     a1 = graph.get_node_data(node1)
