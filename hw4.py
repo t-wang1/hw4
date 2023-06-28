@@ -270,10 +270,10 @@ def display_airports():
     graph.get_keys(code)
     for i in range(len(code)):
         if i % 10 == 0:
-            print("\t")
-        print(code[i])
+            print("\t", end = "")
+        print(code[i], end = "")
         if i < len(code)-1:
-            print(", ")
+            print(", ", end = "")
         if i % 10 == 9:
             print()
     print("\n\n")
@@ -320,9 +320,9 @@ def display_menu():
     print("Q) Quit")
     print("-")
 
-def process_user_input(self):
-    input = print("Enter your selection: ")
-    if input == "S":
+def process_user_input():
+    user_input = input("Enter your selection: ")
+    if user_input == "S":
         print("Enter the airport code: ")
         if graph.node_exists(input):
             neighbors = []
@@ -338,14 +338,15 @@ def process_user_input(self):
                 t = trip_planner(stops, input)
                 tps.add_transaction(t)
         else:
-            print("invalid airport code error - no stop added")
-    elif input == "U":
-        tps.undo_transaction
-    elif input == "R":
-        tps.do_transaction
-    elif input == "E":
-        tps.clear_all_transactions
-    elif input == "Q":
+            print("invalid airport code error - no stop added") 
+            # check this 
+    elif user_input == "U":
+        tps.undo_transaction()
+    elif user_input == "R":
+        tps.do_transaction()
+    elif user_input == "E":
+        tps.clear_all_transactions()
+    elif user_input == "Q":
         return False
 
 def init_all_airports():
@@ -371,6 +372,10 @@ def init_all_edges():
         edge2 = edge_data['edge2']
         init_edge(edge1, edge2)
 
+airport_graph = weighted_graph()
+answer = input("Where are you flying? ")
+print("\nEnjoy going to " + answer + "\n")
+
 init_all_airports()
 init_all_edges()
 display_airports()
@@ -386,4 +391,14 @@ def main():
         display_menu()
         check = process_user_input()
 
-# airport_graph = weighted_graph()
+for airport_data in data:
+    if airport_data['airport code'] == answer:
+        print(answer)
+        airport_obj = airport(answer, airport_data['latitude degrees'], airport_data['latitude minutes'], airport_data['longitude degrees'], airport_data['longitude minutes'])
+        airport_graph.add_node(answer, airport_obj)
+
+print(airport_graph.nodes)
+added_airport = airport_graph.get_node_data(answer)
+print("\nAirport Added to Graph: " + added_airport.get_code() + "\n")
+
+main()
