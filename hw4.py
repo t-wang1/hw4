@@ -5,7 +5,7 @@ with open('/Users/tiffanywang/Documents/CSE 216/hw4/airport_data.json') as f:
     data = json.load(f)
 
 with open('/Users/tiffanywang/Documents/CSE 216/hw4/edge_data.json') as f:
-    edge_data = json.load(f) 
+    edges_data = json.load(f) 
 
 class p_tps:
     transactions = []
@@ -165,11 +165,10 @@ class weighted_graph:
         # return self.nodes.has_key(test_node)
     
     def get_edge_id(self, node1, node2):
-        return node1 + "-" + node2
+        return str(node1) + "-" + str(node2)
     
     def add_node(self, node_id, node_data):
-        self.nodes.set(node_id, node_data) 
-        # check setter
+        self.nodes[node_id] = node_data
     
     def get_node_data(self, node_id):
         return self.nodes[node_id]
@@ -288,9 +287,10 @@ def display_current_trip():
     leg_num = 1
     trip_distance = 0.0
     leg_distance = 0.0
+    output = ""
     for i in range(len(stops)):
         if leg_num < len(stops):
-            str += f"\t{i + 1}. "
+            output += f"\t{i + 1}. "
             last_stop = stops[leg_num-1]
             next_stop = stops[leg_num]
             route = []
@@ -309,7 +309,7 @@ def display_current_trip():
                 print("Leg Distance: " + leg_distance + "miles")
             leg_num += 1
             trip_distance += leg_distance
-    str += "Total Trip Distance: " + trip_distance + "miles"
+    output += "Total Trip Distance: " + str(trip_distance) + "miles"
 
 def display_menu():
     print("Enter a selection: ")
@@ -361,12 +361,12 @@ def init_all_airports():
 def init_edge(node1, node2):
     a1 = graph.get_node_data(node1)
     a2 = graph.get_node_data(node2)
-    distance = airport.calculate_distance(a1, a2)
+    distance = a1.calculate_distance(a1, a2) 
     graph.add_edge(a1, a2, distance)
     graph.add_edge(a2, a1, distance)
 
 def init_all_edges():
-    for edge_data in edge_data:
+    for edge_data in edges_data:
         edge1 = edge_data['edge1']
         edge2 = edge_data['edge2']
         init_edge(edge1, edge2)
