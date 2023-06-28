@@ -313,6 +313,36 @@ def displayMenu():
     print("Q) Quit")
     print("-")
 
+def process_user_input(self):
+    input = print("Enter your selection: ")
+    if input == "S":
+        print("Enter the airport code: ")
+        if graph.node_exists(input):
+            neighbors = []
+            graph.get_neighbors(neighbors, input)
+            if len(stops) > 0:
+                last_stop = stops[len(stops)-1]
+                if last_stop == input:
+                    print("duplicate stop error - no stop added")
+                else:
+                    t = trip_planner(stops, input)
+                    tps.add_transaction(t)
+            else:
+                t = trip_planner(stops, input)
+                tps.add_transaction(t)
+        else:
+            print("invalid airport code error - no stop added")
+    elif input == "U":
+        tps.undo_transaction
+    elif input == "R":
+        tps.do_transaction
+    elif input == "E":
+        tps.clear_all_transactions
+    elif input == "Q":
+        return False
+    
+
+
 
 
 
