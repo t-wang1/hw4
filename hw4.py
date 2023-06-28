@@ -15,7 +15,7 @@ class p_tps:
     performing_undo = False
 
     def __init__(self, transactions, num_transactions, most_recent_transaction, performing_do, performing_undo):
-        self.transactions = transactions
+        self.transactions = []
         self.num_transactions = num_transactions
         self.most_recent_transaction = most_recent_transaction
         self.performing_do = performing_do
@@ -47,7 +47,8 @@ class p_tps:
         else:
             self.num_transactions += 1
         
-        self.transactions[self.most_recent_transaction+1] = transaction
+        self.transactions.append(transaction)
+        self.most_recent_transaction = len(self.transactions) - 1
         self.do_transaction()
 
     def do_transaction(self):
@@ -254,7 +255,7 @@ class trip_planner:
     def undo_transaction(self):
         self.trip_stops.pop()
 
-    def __str__():
+    def __str__(self):
         return "Appending Stop"
     
 
@@ -286,9 +287,8 @@ def display_current_trip():
     print("Current Trip Length: ")
     leg_num = 1
     trip_distance = 0.0
-    leg_distance = 0.0
     output = ""
-    for i in range(len(stops)):
+    for i in range(len(stops)-1):
         if leg_num < len(stops):
             output += f"\t{i + 1}. "
             last_stop = stops[leg_num-1]
@@ -298,15 +298,16 @@ def display_current_trip():
             if len(route) < 2:
                 print("No route found from" + last_stop + " to " + next_stop)
             else:
+                leg_distance = 0.0
                 for j in range(len(route)-1):
                     a1 = graph.get_node_data(route[j])
                     a2 = graph.get_node_data(route[j+1])
                     distance = airport.calculate_distance(a1, a2)
                     leg_distance += distance
                     if j == 0:
-                        print(a1.get_code())
-                        print("-" + a2.get_code())
-                print("Leg Distance: " + leg_distance + "miles")
+                        output += a1.get_code()
+                        output += "-" + a2.get_code()
+                print("Leg Distance: " + str(leg_distance) + "miles")
             leg_num += 1
             trip_distance += leg_distance
     output += "Total Trip Distance: " + str(trip_distance) + "miles"
@@ -324,22 +325,23 @@ def process_user_input():
     user_input = input("Enter your selection: ")
     if user_input == "S":
         print("Enter the airport code: ")
-        if graph.node_exists(input):
+        if graph.node_exists(user_input):
             neighbors = []
-            graph.get_neighbors(neighbors, input)
+            graph.get_neighbors(neighbors, user_input)
             if len(stops) > 0:
                 last_stop = stops[len(stops)-1]
                 if last_stop == input:
                     print("duplicate stop error - no stop added")
                 else:
-                    t = trip_planner(stops, input)
+                    t = trip_planner(stops, user_input)
                     tps.add_transaction(t)
+                    stops.append(user_input)
             else:
-                t = trip_planner(stops, input)
+                t = trip_planner(stops, user_input)
                 tps.add_transaction(t)
+                stops.append(user_input)
         else:
             print("invalid airport code error - no stop added") 
-            # check this 
     elif user_input == "U":
         tps.undo_transaction()
     elif user_input == "R":
@@ -348,6 +350,7 @@ def process_user_input():
         tps.clear_all_transactions()
     elif user_input == "Q":
         return False
+    return True
 
 def init_all_airports():
     for airport_data in data:
@@ -391,6 +394,8 @@ def main():
         display_menu()
         check = process_user_input()
 
+main()
+
 for airport_data in data:
     if airport_data['airport code'] == answer:
         print(answer)
@@ -400,5 +405,3 @@ for airport_data in data:
 print(airport_graph.nodes)
 added_airport = airport_graph.get_node_data(answer)
 print("\nAirport Added to Graph: " + added_airport.get_code() + "\n")
-
-main()
