@@ -1,4 +1,5 @@
 import math
+import json 
 
 class p_tps:
     transactions = []
@@ -304,7 +305,7 @@ def display_current_trip():
             trip_distance += leg_distance
     str += "Total Trip Distance: " + trip_distance + "miles"
 
-def displayMenu():
+def display_menu():
     print("Enter a selection: ")
     print("S) Add a Stop to your Trip")
     print("U) Undo")
@@ -341,6 +342,9 @@ def process_user_input(self):
     elif input == "Q":
         return False
     
+with open('airport_data.json') as f:
+    airport_data = json.load(f)
+
 def init_all_airports():
     for airport_data in airport_data:
         airport_code = airport_data['airport_code']
@@ -350,6 +354,9 @@ def init_all_airports():
         longitude_minutes = airport_data['longitude_minutes']
         airport = airport(airport_code, latitude_degrees, latitude_minutes, longitude_degrees, longitude_minutes)
         graph.add_node(airport_code, airport)
+
+with open('edge_data.json') as f:
+    edge_data = json.load(f) 
 
 def init_edge(node1, node2):
     a1 = graph.get_node_data(node1)
@@ -363,10 +370,20 @@ def init_all_edges():
         edge1 = edge_data['edge1']
         edge2 = edge_data['edge2']
         init_edge(edge1, edge2)
-    
 
+init_all_airports()
+init_all_edges()
+display_airports()
+display_current_trip()
+display_menu()
+process_user_input() 
 
+def main():
+    check = True
+    while(check):
+        display_airports()
+        display_current_trip()
+        display_menu()
+        check = process_user_input()
 
-
-
-
+# airport_graph = weighted_graph()
