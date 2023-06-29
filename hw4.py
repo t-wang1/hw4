@@ -15,7 +15,7 @@ class p_tps:
     performing_undo = False
 
     def __init__(self, transactions, num_transactions, most_recent_transaction, performing_do, performing_undo):
-        self.transactions = []
+        self.transactions = transactions
         self.num_transactions = num_transactions
         self.most_recent_transaction = most_recent_transaction
         self.performing_do = performing_do
@@ -114,7 +114,8 @@ class airport:
     def get_longitude_minutes(self):
         return self.longitude_minutes
     
-    def calculate_distance(self, a1, a2):
+    @staticmethod
+    def calculate_distance(a1, a2):
         PI = math.pi
         RADIAN_FACTOR = 180.0/PI
         EARTH_RADIUS = 3963.0
@@ -181,15 +182,17 @@ class weighted_graph:
     def remove_edge(self, node1, node2):
         edge_id = self.get_edge_id(node1, node2)
         edge = self.edges[edge_id]
-
+    
     def get_neighbors(self, neighbors, node):
-        test_keys = list(self.edges.keys())
-        for key in test_keys:
+        for key in self.edges.keys():
             index = key.index("-")
-            start_node = key[0:index]
+            start_node = key[:index]
+            print(start_node)
+            print("test - test - test - test")
             if start_node == node:
-                neighbor = key[index + 1]
+                neighbor = key[index + 1:]
                 neighbors.append(neighbor)
+        # return neighbors
     
     def are_neighbors(self, node1, node2):
         neighbors = []
@@ -202,37 +205,40 @@ class weighted_graph:
             return self.edges[edge_id].get_weight()
         
     def find_path(self, path, node1, node2):
-        print("Find path from " + node1 + " to " + node2)
+        print("Finding path from " + node1 + " to " + node2)
 
-        if (not self.node_exists(node1) or not self.node_exists(node2)):
+        if not (self.node_exists(node1) or self.node_exists(node2)):
             return
-        
+
         path.append(node1)
 
         visited = {}
         visited[node1] = node1
 
         while len(path) > 0:
-            last = path[len(path)-1]
+            last_node = path[-1]
 
             neighbors = []
-            self.get_neighbors(neighbors, last)
+            self.get_neighbors(neighbors, last_node)
+            print(neighbors)
+            print("test - test - test")
 
             closest_index = -1
-            closest_distance = 100000.0
+            closest_distance = 100000
 
             for i in range(len(neighbors)):
+                print("test - test - test")
                 test_neighbor = neighbors[i]
 
                 if test_neighbor == node2:
                     path.append(test_neighbor)
                     return
-                
+
                 if test_neighbor not in visited:
-                    id = self.get_edge_id(last, test_neighbor)
+                    id = self.get_edge_id(last_node, test_neighbor)
                     edge = self.edges[id]
                     if edge.get_weight() < closest_distance:
-                        closest_index = i 
+                        closest_index = i
                         closest_distance = edge.get_weight()
 
             if closest_index >= 0:
@@ -241,6 +247,7 @@ class weighted_graph:
                 path.append(closest_node)
             elif len(path) > 0:
                 path.pop()
+        return path
 
 class trip_planner:
     trip_stops = []
@@ -280,37 +287,52 @@ def display_airports():
     print("\n\n")
 
 def display_current_trip():
+    output = ""
     print("Current Trip Stops: ")
     for i in range(len(stops)):
         print(f"\t{i + 1}. {stops[i]}")
-
-    print(f"Current Trip Length: ")
+    print("Current Trip Length: ")
     leg_num = 1
     trip_distance = 0.0
-    output = ""
-    for i in range(len(stops)-1):
+    leg_distance = 0.0
+    for i in range(len(stops)):
+        last_stop = ""
+        next_stop = ""
+        leg_distance = 0.0
+        # enters the for loop
         if leg_num < len(stops):
             output += f"\t{i + 1}. "
-            last_stop = stops[leg_num-1]
+            last_stop = stops[leg_num - 1]
             next_stop = stops[leg_num]
+            # print(last_stop) 
+            # print(next_stop) 
             route = []
+            # enters the if statement
             graph.find_path(route, last_stop, next_stop)
+            print(route)
+            print(len(route)) # evaluates to 0
             if len(route) < 2:
                 print("No route found from " + last_stop + " to " + next_stop)
             else:
-                leg_distance = 0.0
-                for j in range(len(route)-1):
+                for j in range(len(route) - 1):
                     a1 = graph.get_node_data(route[j])
-                    a2 = graph.get_node_data(route[j+1])
+                    a2 = graph.get_node_data(route[j + 1])
                     distance = airport.calculate_distance(a1, a2)
+                    print("test - test - test - TEST")
+                    route.append(a1)
                     leg_distance += distance
+                    print("test - test - test")
+                    print(len(route))
                     if j == 0:
-                        output += a1.get_code()
-                        output += "-" + a2.get_code()
-                print("Leg Distance: " + str(leg_distance) + "miles")
+                        print(a1.get_code())
+                        print("-" + a2.get_code())
+                print("Leg Distance: " + str(leg_distance) + " miles")
             leg_num += 1
             trip_distance += leg_distance
-    output += "Total Trip Distance: " + str(trip_distance) + "miles"
+
+    output += "Total Trip Distance: " + str(trip_distance) + " miles"
+    print(output)
+
 
 def display_menu():
     print("Enter a selection: ")
@@ -324,13 +346,14 @@ def display_menu():
 def process_user_input():
     scanner = input("Enter your selection: ")
     if scanner == "S":
-        user_input = input("Enter the airport code: ")
+        print("Enter the airport code: ")
+        user_input = input()
         if graph.node_exists(user_input):
             neighbors = []
             graph.get_neighbors(neighbors, user_input)
             if len(stops) > 0:
-                last_stop = stops[len(stops)-1]
-                if last_stop == input:
+                last_stop = stops[-1]
+                if last_stop == user_input:
                     print("duplicate stop error - no stop added")
                 else:
                     t = trip_planner(stops, user_input)
@@ -370,9 +393,9 @@ def init_all_airports():
 def init_edge(node1, node2):
     a1 = graph.get_node_data(node1)
     a2 = graph.get_node_data(node2)
-    distance = a1.calculate_distance(a1, a2) 
-    graph.add_edge(a1, a2, distance)
-    graph.add_edge(a2, a1, distance)
+    distance = airport.calculate_distance(a1, a2) 
+    graph.add_edge(a1.get_code(), a2.get_code(), distance)
+    graph.add_edge(a2.get_code(), a1.get_code(), distance)
 
 def init_all_edges():
     for edge_data in edges_data:
@@ -380,11 +403,18 @@ def init_all_edges():
         edge2 = edge_data['edge2']
         init_edge(edge1, edge2)
 
-airport_graph = weighted_graph()
 answer = input("Where are you flying? ")
 print("\nEnjoy going to " + answer + "\n")
 
 init_all_airports()
+
+# airport_graph = weighted_graph()
+for airport_data in data:
+    if airport_data['airport code'] == answer:
+        print(answer)
+        airport_obj = airport(answer, airport_data['latitude degrees'], airport_data['latitude minutes'], airport_data['longitude degrees'], airport_data['longitude minutes'])
+        graph.add_node(answer, airport_obj)
+
 init_all_edges()
 display_airports()
 display_current_trip()
@@ -402,12 +432,6 @@ def main():
 
 main()
 
-for airport_data in data:
-    if airport_data['airport code'] == answer:
-        print(answer)
-        airport_obj = airport(answer, airport_data['latitude degrees'], airport_data['latitude minutes'], airport_data['longitude degrees'], airport_data['longitude minutes'])
-        airport_graph.add_node(answer, airport_obj)
-
-print(airport_graph.nodes)
-added_airport = airport_graph.get_node_data(answer)
+print(graph.nodes)
+added_airport = graph.get_node_data(answer)
 print("\nAirport Added to Graph: " + added_airport.get_code() + "\n")
