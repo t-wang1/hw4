@@ -187,12 +187,9 @@ class weighted_graph:
         for key in self.edges.keys():
             index = key.index("-")
             start_node = key[:index]
-            print(start_node)
-            print("test - test - test - test")
             if start_node == node:
                 neighbor = key[index + 1:]
                 neighbors.append(neighbor)
-        # return neighbors
     
     def are_neighbors(self, node1, node2):
         neighbors = []
@@ -205,7 +202,7 @@ class weighted_graph:
             return self.edges[edge_id].get_weight()
         
     def find_path(self, path, node1, node2):
-        print("Finding path from " + node1 + " to " + node2)
+        print("\n\nFinding path from " + node1 + " to " + node2)
 
         if not (self.node_exists(node1) or self.node_exists(node2)):
             return
@@ -220,14 +217,11 @@ class weighted_graph:
 
             neighbors = []
             self.get_neighbors(neighbors, last_node)
-            print(neighbors)
-            print("test - test - test")
 
             closest_index = -1
             closest_distance = 100000
 
             for i in range(len(neighbors)):
-                print("test - test - test")
                 test_neighbor = neighbors[i]
 
                 if test_neighbor == node2:
@@ -247,7 +241,6 @@ class weighted_graph:
                 path.append(closest_node)
             elif len(path) > 0:
                 path.pop()
-        return path
 
 class trip_planner:
     trip_stops = []
@@ -299,18 +292,12 @@ def display_current_trip():
         last_stop = ""
         next_stop = ""
         leg_distance = 0.0
-        # enters the for loop
         if leg_num < len(stops):
             output += f"\t{i + 1}. "
             last_stop = stops[leg_num - 1]
             next_stop = stops[leg_num]
-            # print(last_stop) 
-            # print(next_stop) 
             route = []
-            # enters the if statement
             graph.find_path(route, last_stop, next_stop)
-            print(route)
-            print(len(route)) # evaluates to 0
             if len(route) < 2:
                 print("No route found from " + last_stop + " to " + next_stop)
             else:
@@ -318,18 +305,13 @@ def display_current_trip():
                     a1 = graph.get_node_data(route[j])
                     a2 = graph.get_node_data(route[j + 1])
                     distance = airport.calculate_distance(a1, a2)
-                    print("test - test - test - TEST")
                     route.append(a1)
                     leg_distance += distance
-                    print("test - test - test")
-                    print(len(route))
                     if j == 0:
-                        print(a1.get_code())
-                        print("-" + a2.get_code())
+                        print(a1.get_code() + "-" + a2.get_code())
                 print("Leg Distance: " + str(leg_distance) + " miles")
             leg_num += 1
             trip_distance += leg_distance
-
     output += "Total Trip Distance: " + str(trip_distance) + " miles"
     print(output)
 
@@ -416,10 +398,10 @@ for airport_data in data:
         graph.add_node(answer, airport_obj)
 
 init_all_edges()
-display_airports()
-display_current_trip()
-display_menu()
-process_user_input() 
+# display_airports()
+# display_current_trip()
+# display_menu()
+# process_user_input() 
 
 def main():
     check = True
